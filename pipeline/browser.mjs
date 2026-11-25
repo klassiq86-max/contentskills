@@ -18,7 +18,7 @@ export async function openDraft(project, {width, height, scale = 1, cut = 'all',
   const close = async () => {
     server.close(); server.closeAllConnections?.();      // do not wait for the browser's idle connections to time out
     chrome.kill(); await new Promise(r => chrome.exitCode === null ? chrome.once('exit', r) : r());
-    rmSync(profile, {recursive: true, force: true});
+    try { rmSync(profile, {recursive: true, force: true, maxRetries: 10, retryDelay: 200}); } catch {}      // a closing browser can still be writing its profile
   };
   try {
     const wsUrl = await new Promise((ok, bad) => {
